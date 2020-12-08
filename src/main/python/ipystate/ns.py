@@ -1,6 +1,7 @@
 import uuid
+from collections import MutableMapping
 
-from typing import Iterable, Dict, Set
+from typing import Iterable, Dict, Set, Iterator
 
 from ipystate.serialization import Serializer, Deserializer, PrimitiveDump, ComponentDump
 from ipystate.change import AtomicChange, PrimitiveAtomicChange, ComponentAtomicChange, RemoveAtomicChange
@@ -8,9 +9,9 @@ from ipystate.impl.walker import Walker
 from ipystate.impl.changedetector import ChangeStage, ChangedState, ChangeDetector
 
 
-class Namespace(dict):
+class Namespace(MutableMapping):
     def __init__(self, init: Dict[str, object], serializer: Serializer, deserializer: Deserializer, change_detector: ChangeDetector):
-        super().__init__(init)
+        self._dict = init.copy()
         self.armed = True
         self._touched = set()
         self._deleted = set()
@@ -78,24 +79,30 @@ class Namespace(dict):
         )
 
     def __setitem__(self, name: str, value: object) -> None:
-        super().__setitem__(name, value)
+        self._dict[name] = value
         if self.armed:
             self.mark_touched(name)
             if name in self._deleted:
                 self._deleted.remove(name)
 
     def __getitem__(self, name: str) -> object:
-        if self.armed and super().__contains__(name):
+        if self.armed and name in self._dict:
             self.mark_touched(name)
-        return super().__getitem__(name)
+        return self._dict[name]
 
     def __delitem__(self, name: str) -> None:
-        if self.armed and super().__contains__(name):
+        if self.armed and name in self._dict:
             # we assume deleted variable to be dirty as well,
             # so we can re-serialize components affected by del
             self._deleted.add(name)
             self._touched.add(name)
-        super().__delitem__(name)
+        del self._dict[name]
+
+    def __iter__(self) -> Iterator:
+        return self._dict.__iter__()
+
+    def __len__(self) -> int:
+        return self._dict.__len__()
 
     def touched(self) -> Set[str]:
         return set(self._touched)
