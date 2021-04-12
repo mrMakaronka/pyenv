@@ -12,9 +12,9 @@ setuptools.setup(
     install_requires=[
         'ipython>=7.13.0,<=7.19.0',
         'cloudpickle@git+https://github.com/faucct/cloudpickle.git@feature/persistent-function-globals#egg=cloudpickle',
-        'pyarrow>=0.17.1,<=2.0.0',
+        'pyarrow>=0.17.1,<=3.0.0',
         'pybase64>=1.0.0,<=1.0.2',
-        'cython==0.29.5',
+        'cython',
         'pympler==0.9',
     ],
     tests_require=[
