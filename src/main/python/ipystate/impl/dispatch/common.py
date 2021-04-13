@@ -9,12 +9,26 @@ import _thread
 
 @constructor
 def _code_constructor(
-    argcount, kwonlyargcount, nlocals, stacksize, flags, codestring, constants, names, varnames, filename, name,
-    firstlineno, lnotab, freevars, cellvars
+        argcount, kwonlyargcount, nlocals, stacksize, flags, codestring, constants, names, varnames, filename, name,
+        firstlineno, lnotab, freevars, cellvars
 ):
     # noinspection PyTypeChecker
-    return CodeType(argcount, kwonlyargcount, nlocals, stacksize, flags, codestring, constants, names,
-                    varnames, filename, name, firstlineno, lnotab, freevars, cellvars)
+    return CodeType(
+        argcount, 0, kwonlyargcount, nlocals, stacksize, flags, codestring, constants, names,
+        varnames, filename, name, firstlineno, lnotab, freevars, cellvars,
+    )
+
+
+@constructor
+def _code_constructor_python_3_8(
+        argcount, posonlyargcount, kwonlyargcount, nlocals, stacksize, flags, codestring, constants, names, varnames,
+        filename, name, firstlineno, lnotab, freevars, cellvars
+):
+    # noinspection PyTypeChecker
+    return CodeType(
+        argcount, posonlyargcount, kwonlyargcount, nlocals, stacksize, flags, codestring, constants, names,
+        varnames, filename, name, firstlineno, lnotab, freevars, cellvars,
+    )
 
 
 def _function_constructor(code):
@@ -37,10 +51,10 @@ class CommonDispatcher(Dispatcher):
 
     @staticmethod
     def _reduce_code(code):
-        return _code_constructor, (
-            code.co_argcount, code.co_kwonlyargcount, code.co_nlocals, code.co_stacksize, code.co_flags, code.co_code,
-            code.co_consts, code.co_names, code.co_varnames, code.co_filename, code.co_name, code.co_firstlineno,
-            code.co_lnotab, code.co_freevars, code.co_cellvars
+        return _code_constructor_python_3_8, (
+            code.co_argcount, code.co_posonlyargcount, code.co_kwonlyargcount, code.co_nlocals, code.co_stacksize,
+            code.co_flags, code.co_code, code.co_consts, code.co_names, code.co_varnames, code.co_filename,
+            code.co_name, code.co_firstlineno, code.co_lnotab, code.co_freevars, code.co_cellvars,
         )
 
     @staticmethod
