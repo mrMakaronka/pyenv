@@ -1,5 +1,6 @@
 from abc import ABC
-from collections import defaultdict, MutableMapping
+from collections import defaultdict
+from collections.abc import MutableMapping
 from typing import Mapping, Tuple, Union, VT_co
 
 
