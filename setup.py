@@ -4,6 +4,14 @@ from Cython.Build import cythonize
 import Cython.Compiler.Options
 Cython.Compiler.Options.annotate = True
 
+import sys
+
+version = sys.version_info
+assert version.major == 3
+assert version.minor >= 7
+
+pyarrow_version = '>=0.17.1,<=5.0.0' if version.minor < 10 else '>=6.0.1'
+
 setuptools.setup(
     name='ipystate',
     version='0.0.1',
@@ -12,7 +20,7 @@ setuptools.setup(
     install_requires=[
         'ipython>=7.13.0,<=7.19.0',
         'cloudpickle@git+https://github.com/AlvinMax/cloudpickle.git@feature/persistent-function-globals#egg=cloudpickle',
-        'pyarrow>=0.17.1,<=5.0.0',
+        f'pyarrow{pyarrow_version}',
         'pybase64>=1.0.2',
         'cython>=0.29.26',
         'pympler>=0.9',
